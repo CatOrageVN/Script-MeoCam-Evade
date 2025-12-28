@@ -1,9 +1,36 @@
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/CatOrageVN/Script-MeoCam-Evade/refs/heads/main/FluentSettings"))()
 local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/CatOrageVN/Script-MeoCam-Evade/refs/heads/main/ThemeAddon"))()
+
+-- ==================== HỆ THỐNG QUẢN LÝ THƯ MỤC TuanHyperEvade ====================
+local ROOT_FOLDER = "TuanHyperEvade"
+
+local function SetupFolders()
+    local folders = {
+        ROOT_FOLDER,
+        ROOT_FOLDER .. "/Settings",
+        ROOT_FOLDER .. "/Configs"
+    }
+    for _, folder in ipairs(folders) do
+        if not isfolder(folder) then
+            makefolder(folder)
+        end
+    end
+end
+
+SetupFolders()
+
+-- Cấu hình Manager
+InterfaceManager:SetFolder(ROOT_FOLDER .. "/Settings")
+SaveManager:SetFolder(ROOT_FOLDER .. "/Configs")
+InterfaceManager:SetLibrary(Fluent)
+SaveManager:SetLibrary(Fluent)
+SaveManager:IgnoreThemeSettings() 
+
+-- ==================== KHỞI TẠO WINDOW (ĐÃ SỬA LỖI) ====================
 local Window = Fluent:CreateWindow({
-    Title = "MeoCam🍊 X Evade🏃‍♂️",
-    SubTitle = "Beta 1 🛠 (No official version yet ✅) Developed by MeoCam🍊 and CatOrage❤️",
+    Title = "TuanHyper👺 X Evade🏃‍♂️",
+    SubTitle = "Beta 1 🛠 (No official version yet ✅) Developed by TuanHyper👺",
     TabWidth = 160,
     Size = UDim2.fromOffset(580, 460),
     Acrylic = true,
@@ -15,14 +42,22 @@ local FloatingButton = loadstring(game:HttpGet("https://raw.githubusercontent.co
 FloatingButton.init(Window)
 
 local Tabs = {
-    Main = Window:AddTab({ Title = "Main", Icon = "home" })
+    Main = Window:AddTab({ Title = "Main", Icon = "home" }),
+    Settings = Window:AddTab({ Title = "Settings", Icon = "settings" }) -- Cần thiết để lưu cấu hình
 }
+
+-- Đưa các cài đặt vào Tab Settings
+InterfaceManager:BuildInterfaceSection(Tabs.Settings)
+SaveManager:BuildConfigSection(Tabs.Settings)
+
+-- Lệnh chốt để không bị màu đen
+Fluent:SetTheme("Rose")
 
 local Options = Fluent.Options
 
 Fluent:Notify({
-    Title = "MeoCam🍊 X Evade🏃‍♂️",
-    Content = "System Loaded",
+    Title = "TuanHyper👺 X Evade🏃‍♂️",
+    Content = "Script TuanHyper👺 đã sẵn sàng!",
     Duration = 3
 })
 
