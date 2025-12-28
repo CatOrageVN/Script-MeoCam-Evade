@@ -2,21 +2,12 @@ local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/
 local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/CatOrageVN/Script-MeoCam-Evade/refs/heads/main/FluentSettings"))()
 local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/CatOrageVN/Script-MeoCam-Evade/refs/heads/main/ThemeAddon"))()
 
--- [[ SYSTEM DIRECTORY MANAGEMENT ]]
-local ROOT_FOLDER = "TuanHyperEvade"
-local Paths = {
-    Root = ROOT_FOLDER,
-    Settings = ROOT_FOLDER .. "/Settings",
-    Configs = ROOT_FOLDER .. "/Configs"
-}
+-- [[ SYSTEM FOLDERS ]]
+local ROOT = "TuanHyperEvade"
+if not isfolder(ROOT) then makefolder(ROOT) end
+if not isfolder(ROOT .. "/Configs") then makefolder(ROOT .. "/Configs") end
 
-for _, path in pairs(Paths) do
-    if not isfolder(path) then
-        makefolder(path)
-    end
-end
-
--- [[ THEME DEFINITION ]]
+-- [[ THEME SETUP ]]
 Fluent:RegisterThemes({
     Rose = {
         Accent = Color3.fromRGB(255, 145, 175),
@@ -26,10 +17,9 @@ Fluent:RegisterThemes({
     }
 })
 
--- [[ WINDOW INITIALIZATION ]]
 local Window = Fluent:CreateWindow({
     Title = "TuanHyper👺 X Evade🏃‍♂️",
-    SubTitle = "Beta 1 🛠 Developed by TuanHyper👺",
+    SubTitle = "English Version - Beta 1",
     TabWidth = 160,
     Size = UDim2.fromOffset(580, 460),
     Acrylic = true,
@@ -37,50 +27,64 @@ local Window = Fluent:CreateWindow({
     MinimizeKey = Enum.KeyCode.LeftControl
 })
 
-Fluent:SetTheme("Rose")
+-- [[ LOGIC VARIABLES ]]
+local Services = {
+    Players = game:GetService("Players"),
+    RunService = game:GetService("RunService"),
+    ReplicatedStorage = game:GetService("ReplicatedStorage")
+}
+local LocalPlayer = Services.Players.LocalPlayer
 
--- [[ CONFIGURATION MANAGER ]]
-InterfaceManager:SetFolder(Paths.Settings)
-SaveManager:SetFolder(Paths.Configs)
-InterfaceManager:SetLibrary(Fluent)
-SaveManager:SetLibrary(Fluent)
-SaveManager:IgnoreThemeSettings()
-
--- [[ TABS SETUP ]]
+-- [[ TABS ]]
 local Tabs = {
     Main = Window:AddTab({ Title = "Main", Icon = "home" }),
-    Visuals = Window:AddTab({ Title = "Visuals", Icon = "eye" }),
     Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
 }
 
--- [[ UI SECTIONS TRANSLATION ]]
-local MainSection = Tabs.Main:AddSection("Main Features")
-local VisualSection = Tabs.Visuals:AddSection("ESP Visuals")
+-- [[ UI ELEMENTS ]]
+local AutoRespawn = Tabs.Main:AddToggle("AutoRespawn", {Title = "Auto Respawn", Default = false})
+local NoShake = Tabs.Main:AddToggle("NoShake", {Title = "No Camera Shake", Default = false})
 
--- Example Toggles translated
-local AutoRespawnToggle = Tabs.Main:AddToggle("AutoRespawn", {Title = "Auto Respawn", Default = false})
-local AntiAFKToggle = Tabs.Main:AddToggle("AntiAFK", {Title = "Anti-AFK System", Default = false})
-local NoShakeToggle = Tabs.Main:AddToggle("NoShake", {Title = "No Camera Shake", Default = false})
+-- [[ LOGIC EXECUTION ]]
+-- 1. Auto Respawn Logic
+local respawnConn
+AutoRespawn:OnChanged(function()
+    if Fluent.Options.AutoRespawn.Value then
+        respawnConn = LocalPlayer.CharacterAdded:Connect(function(char)
+            task.wait(2)
+            if char:GetAttribute("Downed") then
+                Services.ReplicatedStorage.Events.Player.ChangePlayerMode:FireServer(true)
+            end
+        end)
+    elseif respawnConn then
+        respawnConn:Disconnect()
+    end
+end)
 
-local NextbotESP = Tabs.Visuals:AddToggle("NextbotESP", {Title = "Nextbot ESP", Default = false})
-local PlayerESP = Tabs.Visuals:AddToggle("PlayerESP", {Title = "Player ESP", Default = false})
+-- 2. No Shake Logic
+Services.RunService.RenderStepped:Connect(function()
+    if Fluent.Options.NoShake and Fluent.Options.NoShake.Value then
+        pcall(function()
+            LocalPlayer.PlayerScripts.Camera.Set:Invoke("CFrameOffset", "Shake", CFrame.new())
+        end)
+    end
+end)
 
--- [[ FLOATING BUTTON ]]
-local FloatingButton = loadstring(game:HttpGet("https://raw.githubusercontent.com/Nyxarth910/Draconic-Hub-X/refs/heads/main/Files/Floating%20Button.lua", true))()
-FloatingButton.init(Window)
-
--- [[ FINALIZATION ]]
-InterfaceManager:BuildInterfaceSection(Tabs.Settings)
+-- [[ FINAL SETUP ]]
+SaveManager:SetLibrary(Fluent)
+InterfaceManager:SetLibrary(Fluent)
+SaveManager:SetFolder(ROOT .. "/Configs")
+SaveManager:IgnoreThemeSettings()
 SaveManager:BuildConfigSection(Tabs.Settings)
 
+Window:SelectTab(1)
+Fluent:SetTheme("Rose")
+
 Fluent:Notify({
-    Title = "TuanHyper👺 Hub",
-    Content = "Script initialized successfully!",
-    Duration = 3
+    Title = "TuanHyper👺",
+    Content = "Script Loaded! Press Left Control to Toggle UI.",
+    Duration = 5
 })
-
-local Options = Fluent.Options
-
 -- =========================================================================
 -- Services
 local Players = game:GetService("Players")
