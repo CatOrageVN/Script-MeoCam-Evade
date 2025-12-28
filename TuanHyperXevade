@@ -2,7 +2,7 @@ local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/
 local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/CatOrageVN/Script-MeoCam-Evade/refs/heads/main/FluentSettings"))()
 local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/CatOrageVN/Script-MeoCam-Evade/refs/heads/main/ThemeAddon"))()
 
--- [[ 1. QUẢN LÝ THƯ MỤC HỆ THỐNG ]]
+-- [[ SYSTEM DIRECTORY MANAGEMENT ]]
 local ROOT_FOLDER = "TuanHyperEvade"
 local Paths = {
     Root = ROOT_FOLDER,
@@ -10,70 +10,76 @@ local Paths = {
     Configs = ROOT_FOLDER .. "/Configs"
 }
 
--- Hàm kiểm tra và tạo toàn bộ thư mục cùng lúc
 for _, path in pairs(Paths) do
     if not isfolder(path) then
         makefolder(path)
     end
 end
 
--- [[ 2. THIẾT LẬP THEME (FIX LỖI MÀU ĐEN) ]]
--- Đăng ký màu Rose vào Fluent để hệ thống nhận diện được tên Theme này
+-- [[ THEME DEFINITION ]]
 Fluent:RegisterThemes({
     Rose = {
-        Accent = Color3.fromRGB(255, 145, 175),    -- Hồng đào (Phần nổi bật)
-        MainColor = Color3.fromRGB(28, 20, 22),   -- Nền tối ánh hồng
-        SecondaryColor = Color3.fromRGB(38, 28, 30), -- Nền các khung chức năng
-        TextColor = Color3.fromRGB(255, 240, 245) -- Màu chữ trắng hồng
+        Accent = Color3.fromRGB(255, 145, 175),
+        MainColor = Color3.fromRGB(28, 20, 22),
+        SecondaryColor = Color3.fromRGB(38, 28, 30),
+        TextColor = Color3.fromRGB(255, 240, 245)
     }
 })
 
--- [[ 3. KHỞI TẠO WINDOW ]]
+-- [[ WINDOW INITIALIZATION ]]
 local Window = Fluent:CreateWindow({
     Title = "TuanHyper👺 X Evade🏃‍♂️",
-    SubTitle = "V1 🛠 Developed by TuanHyper👺",
+    SubTitle = "Beta 1 🛠 Developed by TuanHyper👺",
     TabWidth = 160,
     Size = UDim2.fromOffset(580, 460),
     Acrylic = true,
-    Theme = "Rose", -- Khai báo theme đã đăng ký ở trên
+    Theme = "Rose",
     MinimizeKey = Enum.KeyCode.LeftControl
 })
 
--- Ép màu Rose ngay lập tức sau khi tạo Window
 Fluent:SetTheme("Rose")
 
--- [[ 4. CẤU HÌNH MANAGER ]]
+-- [[ CONFIGURATION MANAGER ]]
 InterfaceManager:SetFolder(Paths.Settings)
 SaveManager:SetFolder(Paths.Configs)
-
 InterfaceManager:SetLibrary(Fluent)
 SaveManager:SetLibrary(Fluent)
-
--- Quan trọng: Bỏ qua theme cũ từ máy người dùng để luôn hiện màu Rose
 SaveManager:IgnoreThemeSettings()
 
--- [[ 5. KHỞI TẠO TABS & BUTTONS ]]
+-- [[ TABS SETUP ]]
 local Tabs = {
     Main = Window:AddTab({ Title = "Main", Icon = "home" }),
+    Visuals = Window:AddTab({ Title = "Visuals", Icon = "eye" }),
     Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
 }
 
--- Tự động dựng giao diện lưu trữ vào Tab Settings
-InterfaceManager:BuildInterfaceSection(Tabs.Settings)
-SaveManager:BuildConfigSection(Tabs.Settings)
+-- [[ UI SECTIONS TRANSLATION ]]
+local MainSection = Tabs.Main:AddSection("Main Features")
+local VisualSection = Tabs.Visuals:AddSection("ESP Visuals")
 
--- Khởi tạo nút nổi (Dành cho Mobile/PC)
+-- Example Toggles translated
+local AutoRespawnToggle = Tabs.Main:AddToggle("AutoRespawn", {Title = "Auto Respawn", Default = false})
+local AntiAFKToggle = Tabs.Main:AddToggle("AntiAFK", {Title = "Anti-AFK System", Default = false})
+local NoShakeToggle = Tabs.Main:AddToggle("NoShake", {Title = "No Camera Shake", Default = false})
+
+local NextbotESP = Tabs.Visuals:AddToggle("NextbotESP", {Title = "Nextbot ESP", Default = false})
+local PlayerESP = Tabs.Visuals:AddToggle("PlayerESP", {Title = "Player ESP", Default = false})
+
+-- [[ FLOATING BUTTON ]]
 local FloatingButton = loadstring(game:HttpGet("https://raw.githubusercontent.com/Nyxarth910/Draconic-Hub-X/refs/heads/main/Files/Floating%20Button.lua", true))()
 FloatingButton.init(Window)
 
--- [[ 6. HOÀN TẤT ]]
-local Options = Fluent.Options
+-- [[ FINALIZATION ]]
+InterfaceManager:BuildInterfaceSection(Tabs.Settings)
+SaveManager:BuildConfigSection(Tabs.Settings)
 
 Fluent:Notify({
     Title = "TuanHyper👺 Hub",
-    Content = "Khởi tạo thành công! Giao diện: Rose Pink Update!",
+    Content = "Script initialized successfully!",
     Duration = 3
 })
+
+local Options = Fluent.Options
 
 -- =========================================================================
 -- Services
