@@ -2,65 +2,80 @@ local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/
 local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/CatOrageVN/Script-MeoCam-Evade/refs/heads/main/FluentSettings"))()
 local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/CatOrageVN/Script-MeoCam-Evade/refs/heads/main/ThemeAddon"))()
 
--- ==================== HỆ THỐNG QUẢN LÝ THƯ MỤC TuanHyperEvade ====================
+-- [[ 1. QUẢN LÝ THƯ MỤC HỆ THỐNG ]]
 local ROOT_FOLDER = "TuanHyperEvade"
+local Paths = {
+    Root = ROOT_FOLDER,
+    Settings = ROOT_FOLDER .. "/Settings",
+    Configs = ROOT_FOLDER .. "/Configs"
+}
 
-local function SetupFolders()
-    local folders = {
-        ROOT_FOLDER,
-        ROOT_FOLDER .. "/Settings",
-        ROOT_FOLDER .. "/Configs"
-    }
-    for _, folder in ipairs(folders) do
-        if not isfolder(folder) then
-            makefolder(folder)
-        end
+-- Hàm kiểm tra và tạo toàn bộ thư mục cùng lúc
+for _, path in pairs(Paths) do
+    if not isfolder(path) then
+        makefolder(path)
     end
 end
 
-SetupFolders()
+-- [[ 2. THIẾT LẬP THEME (FIX LỖI MÀU ĐEN) ]]
+-- Đăng ký màu Rose vào Fluent để hệ thống nhận diện được tên Theme này
+Fluent:RegisterThemes({
+    Rose = {
+        Accent = Color3.fromRGB(255, 145, 175),    -- Hồng đào (Phần nổi bật)
+        MainColor = Color3.fromRGB(28, 20, 22),   -- Nền tối ánh hồng
+        SecondaryColor = Color3.fromRGB(38, 28, 30), -- Nền các khung chức năng
+        TextColor = Color3.fromRGB(255, 240, 245) -- Màu chữ trắng hồng
+    }
+})
 
--- Cấu hình Manager
-InterfaceManager:SetFolder(ROOT_FOLDER .. "/Settings")
-SaveManager:SetFolder(ROOT_FOLDER .. "/Configs")
-InterfaceManager:SetLibrary(Fluent)
-SaveManager:SetLibrary(Fluent)
-SaveManager:IgnoreThemeSettings() 
-
--- ==================== KHỞI TẠO WINDOW (ĐÃ SỬA LỖI) ====================
+-- [[ 3. KHỞI TẠO WINDOW ]]
 local Window = Fluent:CreateWindow({
     Title = "TuanHyper👺 X Evade🏃‍♂️",
-    SubTitle = "Beta 1 🛠 (No official version yet ✅) Developed by TuanHyper👺",
+    SubTitle = "V1 🛠 Developed by TuanHyper👺",
     TabWidth = 160,
     Size = UDim2.fromOffset(580, 460),
     Acrylic = true,
-    Theme = "Rose",
+    Theme = "Rose", -- Khai báo theme đã đăng ký ở trên
     MinimizeKey = Enum.KeyCode.LeftControl
 })
 
-local FloatingButton = loadstring(game:HttpGet("https://raw.githubusercontent.com/Nyxarth910/Draconic-Hub-X/refs/heads/main/Files/Floating%20Button.lua",true))()
-FloatingButton.init(Window)
+-- Ép màu Rose ngay lập tức sau khi tạo Window
+Fluent:SetTheme("Rose")
 
+-- [[ 4. CẤU HÌNH MANAGER ]]
+InterfaceManager:SetFolder(Paths.Settings)
+SaveManager:SetFolder(Paths.Configs)
+
+InterfaceManager:SetLibrary(Fluent)
+SaveManager:SetLibrary(Fluent)
+
+-- Quan trọng: Bỏ qua theme cũ từ máy người dùng để luôn hiện màu Rose
+SaveManager:IgnoreThemeSettings()
+
+-- [[ 5. KHỞI TẠO TABS & BUTTONS ]]
 local Tabs = {
     Main = Window:AddTab({ Title = "Main", Icon = "home" }),
-    Settings = Window:AddTab({ Title = "Settings", Icon = "settings" }) -- Cần thiết để lưu cấu hình
+    Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
 }
 
--- Đưa các cài đặt vào Tab Settings
+-- Tự động dựng giao diện lưu trữ vào Tab Settings
 InterfaceManager:BuildInterfaceSection(Tabs.Settings)
 SaveManager:BuildConfigSection(Tabs.Settings)
 
--- Lệnh chốt để không bị màu đen
-Fluent:SetTheme("Rose")
+-- Khởi tạo nút nổi (Dành cho Mobile/PC)
+local FloatingButton = loadstring(game:HttpGet("https://raw.githubusercontent.com/Nyxarth910/Draconic-Hub-X/refs/heads/main/Files/Floating%20Button.lua", true))()
+FloatingButton.init(Window)
 
+-- [[ 6. HOÀN TẤT ]]
 local Options = Fluent.Options
 
 Fluent:Notify({
-    Title = "TuanHyper👺 X Evade🏃‍♂️",
-    Content = "Script TuanHyper👺 đã sẵn sàng!",
+    Title = "TuanHyper👺 Hub",
+    Content = "Khởi tạo thành công! Giao diện: Rose Pink Update!",
     Duration = 3
 })
 
+-- =========================================================================
 -- Services
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
